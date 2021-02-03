@@ -83,8 +83,9 @@ def main():
 def infere(img_dir, model, epoch, write_to_file=True):
     results = []
     for file in os.listdir(img_dir):
+        full_path = img_dir + '/' + file
         name = file.split(".")[0]
-        img = plt.imread(file)/255.0  # normalization
+        img = plt.imread(full_path)/255.0  # normalization
         img = np.transpose(img, (2,0,1))
         img = np.expand_dims(img, axis=0)
         with torch.no_grad():
