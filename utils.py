@@ -30,6 +30,7 @@ def parse_command():
     parser.add_argument('-i', '--inference', default='', type=str, metavar='PATH',)
     parser.add_argument('--gpu', default='0', type=str, metavar='N', help="gpu id")
     parser.add_argument('--image_folder', metavar='IMAGEFOLDER', help='folder containing images for inference')
+    parser.add_argument('--output_dir', metavar='OUTPUTDIR', default='predictions/', help='folder to save output')
     parser.set_defaults(cuda=True)
 
     args = parser.parse_args()

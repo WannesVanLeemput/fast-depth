@@ -15,6 +15,7 @@ import models
 from metrics import AverageMeter, Result
 import utils
 import dataloaders.transforms
+import deploy.data.visualize
 
 args = utils.parse_command()
 print(args)
@@ -46,6 +47,7 @@ def main():
         print("=> loading model '{}'".format(args.inference))
         checkpoint = torch.load(args.inference)
         image_folder = args.image_folder
+        output_folder = args.output_dir
         if type(checkpoint) is dict:
             args.start_epoch = checkpoint['epoch']
             best_result = checkpoint['best_result']
@@ -55,7 +57,7 @@ def main():
             model = checkpoint
             args.start_epoch = 0
         output_directory = os.path.dirname(args.evaluate)
-        infere(image_folder, model, args.start_epoch, write_to_file=False)
+        infere(image_folder, model, args.start_epoch, output_folder, write_to_file=False)
         return
 
     # set batch size to be 1 for validation
@@ -82,7 +84,7 @@ def main():
         return
 
 
-def infere(img_dir, model, epoch, write_to_file=True):
+def infere(img_dir, model, epoch, output_folder, write_to_file=True):
     results = []
     for file in os.listdir(img_dir):
         full_path = img_dir + '/' + file
@@ -94,7 +96,7 @@ def infere(img_dir, model, epoch, write_to_file=True):
         img = np.expand_dims(img, axis=0)
         with torch.no_grad():
             pred = model(torch.from_numpy(img).float().cuda())
-            outname = name + ".npy"
+            outname = output_folder + "/" + name + ".npy"
             np.save(outname, pred.cpu())
     return
 
@@ -164,6 +166,7 @@ def validate(val_loader, model, epoch, write_to_file=True):
                 'mae': avg.mae, 'delta1': avg.delta1, 'delta2': avg.delta2, 'delta3': avg.delta3,
                 'data_time': avg.data_time, 'gpu_time': avg.gpu_time})
     return avg, img_merge
+
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib as mp
+import os
 
 mp.use("pdf")
 import matplotlib.pyplot as plt
@@ -33,3 +34,9 @@ def save_pred_image(pred_npy_fp, filename):
 save_rgb_image('rgb.npy', 'rgb.png')
 save_depth_image('depth.npy', 'depth.png')
 save_pred_image('pred.npy', 'pred.png')
+
+if __name__ == '__main__':
+    # TODO: make this dynamic with arguments
+    folder = 'home/GitHub/FastDepth/fast-depth/predictions/agent_1/'
+    for file in os.listdir(folder):
+        save_depth_image(file, 0)
