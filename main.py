@@ -2,6 +2,7 @@ import os
 import time
 import csv
 import numpy as np
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn.parallel
@@ -36,6 +37,25 @@ def main():
     else:
         raise RuntimeError('Dataset not found.')
 
+    # inference mode
+    if args.inference:
+        assert os.path.isfile(args.evaluate), \
+            "=> no model found at '{}'".format(args.inference)
+        print("=> loading model '{}'".format(args.inference))
+        checkpoint = torch.load(args.inference)
+        image_folder = args.image_folder
+        if type(checkpoint) is dict:
+            args.start_epoch = checkpoint['epoch']
+            best_result = checkpoint['best_result']
+            model = checkpoint['model']
+            print("=> loaded best model (epoch {})".format(checkpoint['epoch']))
+        else:
+            model = checkpoint
+            args.start_epoch = 0
+        output_directory = os.path.dirname(args.evaluate)
+        infere(image_folder, model, args.start_epoch, write_to_file=False)
+        return
+
     # set batch size to be 1 for validation
     val_loader = torch.utils.data.DataLoader(val_dataset,
         batch_size=1, shuffle=False, num_workers=args.workers, pin_memory=True)
@@ -58,6 +78,20 @@ def main():
         output_directory = os.path.dirname(args.evaluate)
         validate(val_loader, model, args.start_epoch, write_to_file=False)
         return
+
+
+def infere(img_dir, model, epoch, write_to_file=True):
+    results = []
+    for file in os.listdir(img_dir):
+        name = file.split(".")[0]
+        img = plt.imread(file)/255.0  # normalization
+        img = np.transpose(img, (2,0,1))
+        img = np.expand_dims(img, axis=0)
+        with torch.no_grad():
+            pred = model(torch.from_numpy(img).float().cuda())
+            outname = name + ".npy"
+            np.save(outname, pred.cpu())
+    return
 
 
 def validate(val_loader, model, epoch, write_to_file=True):
