@@ -620,3 +620,14 @@ class Crop(object):
     def __repr__(self):
         return self.__class__.__name__ + '(i={0},j={1},h={2},w={3})'.format(
             self.i, self.j, self.h, self.w)
+
+
+def inference_transform(rgb, iheight=480, output_size=(224,224)):
+    transform = Compose([
+        Resize(250.0 / iheight),
+        CenterCrop((228, 304)),
+        Resize(output_size),
+    ])
+    rgb_np = transform(rgb)
+    rgb_np = np.asfarray(rgb_np, dtype='float') / 255
+    return rgb_np

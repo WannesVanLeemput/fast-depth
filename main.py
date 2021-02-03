@@ -13,6 +13,7 @@ cudnn.benchmark = True
 import models
 from metrics import AverageMeter, Result
 import utils
+import dataloaders.transforms
 
 args = utils.parse_command()
 print(args)
@@ -88,8 +89,9 @@ def infere(img_dir, model, epoch, write_to_file=True):
         img = plt.imread(full_path)/255.0  # normalization
         img = np.transpose(img, (2,0,1))
         img = np.expand_dims(img, axis=0)
+        img_np = dataloaders.transforms.inference_transform(img)
         with torch.no_grad():
-            pred = model(torch.from_numpy(img).float().cuda())
+            pred = model(torch.from_numpy(img_np).float().cuda())
             outname = name + ".npy"
             np.save(outname, pred.cpu())
     return
