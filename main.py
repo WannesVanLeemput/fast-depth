@@ -86,6 +86,7 @@ def infere(img_dir, model, epoch, write_to_file=True):
     for file in os.listdir(img_dir):
         full_path = img_dir + '/' + file
         name = file.split(".")[0]
+        img = plt.imread(full_path)
         img = dataloaders.transforms.inference_transform(img)
         img = np.transpose(img, (2,0,1))
         img = np.expand_dims(img, axis=0)
