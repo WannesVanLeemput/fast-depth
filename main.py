@@ -3,6 +3,7 @@ import time
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 
 import torch
 import torch.nn.parallel
@@ -86,7 +87,8 @@ def infere(img_dir, model, epoch, write_to_file=True):
     for file in os.listdir(img_dir):
         full_path = img_dir + '/' + file
         name = file.split(".")[0]
-        img = plt.imread(full_path)
+        img = cv2.imread(full_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)  # remove alpha channel
         img = dataloaders.transforms.inference_transform(img)
         img = np.transpose(img, (2,0,1))
         img = np.expand_dims(img, axis=0)
