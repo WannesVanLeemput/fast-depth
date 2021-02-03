@@ -39,7 +39,7 @@ def main():
 
     # inference mode
     if args.inference:
-        assert os.path.isfile(args.evaluate), \
+        assert os.path.isfile(args.inference), \
             "=> no model found at '{}'".format(args.inference)
         print("=> loading model '{}'".format(args.inference))
         checkpoint = torch.load(args.inference)
